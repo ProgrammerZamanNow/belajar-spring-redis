@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.*;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,6 +77,28 @@ class RedisTest {
     assertEquals("Eko", operations.popMax("score").getValue());
     assertEquals("Joko", operations.popMax("score").getValue());
     assertEquals("Budi", operations.popMax("score").getValue());
+  }
+
+  @Test
+  void hash() {
+    HashOperations<String, Object, Object> operations = redisTemplate.opsForHash();
+
+//    operations.put("user:1", "id", "1");
+//    operations.put("user:1", "name", "Eko");
+//    operations.put("user:1", "email", "eko@example.com");
+
+    Map<Object, Object> map = new HashMap<>();
+    map.put("id", "1");
+    map.put("name", "Eko");
+    map.put("email", "eko@example.com");
+
+    operations.putAll("user:1", map);
+
+    assertEquals("1", operations.get("user:1", "id"));
+    assertEquals("Eko", operations.get("user:1", "name"));
+    assertEquals("eko@example.com", operations.get("user:1", "email"));
+
+    redisTemplate.delete("user:1");
   }
 }
 
