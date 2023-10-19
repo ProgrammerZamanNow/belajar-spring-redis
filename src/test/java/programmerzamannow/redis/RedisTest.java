@@ -3,10 +3,7 @@ package programmerzamannow.redis;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 
 import java.time.Duration;
 import java.util.Set;
@@ -65,6 +62,19 @@ public class RedisTest {
     Set<String> students = operations.members("students");
     assertEquals(3, students.size());
     assertThat(students, hasItems("Eko", "Kurniawan", "Khannedy"));
+  }
+
+  @Test
+  void zSet() {
+    ZSetOperations<String, String> operations = redisTemplate.opsForZSet();
+
+    operations.add("score", "Eko", 100);
+    operations.add("score", "Budi", 85);
+    operations.add("score", "Joko", 90);
+
+    assertEquals("Eko", operations.popMax("score").getValue());
+    assertEquals("Joko", operations.popMax("score").getValue());
+    assertEquals("Budi", operations.popMax("score").getValue());
   }
 }
 
