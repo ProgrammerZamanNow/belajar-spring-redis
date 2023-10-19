@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class RedisTest {
+class RedisTest {
 
   @Autowired
   private StringRedisTemplate redisTemplate;
