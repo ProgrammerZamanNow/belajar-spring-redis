@@ -123,5 +123,16 @@ class RedisTest {
     assertEquals("Toko A", sellers.getContent().get(0).getContent().getName());
     assertEquals("Toko B", sellers.getContent().get(1).getContent().getName());
   }
+
+  @Test
+  void hyperLogLog() {
+    HyperLogLogOperations<String, String> operations = redisTemplate.opsForHyperLogLog();
+
+    operations.add("traffics", "eko", "kurniawan", "khannedy");
+    operations.add("traffics", "eko", "budi", "joko");
+    operations.add("traffics", "budi", "joko", "rully");
+
+    assertEquals(6L, operations.size("traffics"));
+  }
 }
 
