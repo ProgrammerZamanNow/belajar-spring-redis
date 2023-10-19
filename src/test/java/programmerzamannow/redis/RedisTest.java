@@ -3,6 +3,8 @@ package programmerzamannow.redis;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.geo.*;
+import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.*;
 
 import java.time.Duration;
@@ -99,6 +101,27 @@ class RedisTest {
     assertEquals("eko@example.com", operations.get("user:1", "email"));
 
     redisTemplate.delete("user:1");
+  }
+
+  @Test
+  void geo() {
+    GeoOperations<String, String> operations = redisTemplate.opsForGeo();
+
+    operations.add("sellers", new Point(106.822695, -6.177456), "Toko A");
+    operations.add("sellers", new Point(106.821016, -6.174598), "Toko B");
+
+    Distance distance = operations.distance("sellers", "Toko A", "Toko B", Metrics.KILOMETERS);
+    assertEquals(0.3682, distance.getValue());
+
+    GeoResults<RedisGeoCommands.GeoLocation<String>> sellers =
+        operations.search("sellers", new Circle(
+            new Point(106.821922, -6.175491),
+            new Distance(5, Metrics.KILOMETERS)
+        ));
+
+    assertEquals(2, sellers.getContent().size());
+    assertEquals("Toko A", sellers.getContent().get(0).getContent().getName());
+    assertEquals("Toko B", sellers.getContent().get(1).getContent().getName());
   }
 }
 
