@@ -3,6 +3,7 @@ package programmerzamannow.redis;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.*;
@@ -133,6 +134,25 @@ class RedisTest {
     operations.add("traffics", "budi", "joko", "rully");
 
     assertEquals(6L, operations.size("traffics"));
+  }
+
+  @Test
+  void transaction() {
+    redisTemplate.execute(new SessionCallback<Object>() {
+      @Override
+      public Object execute(RedisOperations operations) throws DataAccessException {
+        operations.multi();
+
+        operations.opsForValue().set("test1", "Eko", Duration.ofSeconds(2));
+        operations.opsForValue().set("test2", "Budi", Duration.ofSeconds(2));
+
+        operations.exec();
+        return null;
+      }
+    });
+
+    assertEquals("Eko", redisTemplate.opsForValue().get("test1"));
+    assertEquals("Budi", redisTemplate.opsForValue().get("test2"));
   }
 }
 
