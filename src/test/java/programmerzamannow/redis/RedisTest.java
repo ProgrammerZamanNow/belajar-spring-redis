@@ -342,5 +342,40 @@ class RedisTest {
     assertNull(cache.get("Eko"));
     assertNull(cache.get("Budi"));
   }
+
+  @Autowired
+  private ProductService productService;
+
+  @Test
+  void cacheable() {
+    Product product = productService.getProduct("001");
+    assertEquals("001", product.getId());
+
+    Product product2 = productService.getProduct("001");
+    assertEquals(product, product2);
+
+    Product product3 = productService.getProduct("002");
+    assertEquals(product, product2);
+  }
+
+  @Test
+  void cachePut() {
+    Product product = Product.builder().id("P002").name("asal").price(100L).build();
+    productService.save(product);
+
+    Product product2 = productService.getProduct("P002");
+    assertEquals(product, product2);
+  }
+
+  @Test
+  void cacheEvict() {
+    Product product = productService.getProduct("003");
+    assertEquals("003", product.getId());
+
+    productService.remove("003");
+
+    Product product2 = productService.getProduct("003");
+    assertEquals(product, product2);
+  }
 }
 
