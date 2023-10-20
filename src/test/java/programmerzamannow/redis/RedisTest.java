@@ -3,6 +3,8 @@ package programmerzamannow.redis;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.RedisSystemException;
@@ -38,6 +40,9 @@ class RedisTest {
 
   @Autowired
   private ProductRepository productRepository;
+
+  @Autowired
+  private CacheManager cacheManager;
 
   @Test
   void redisTemplate() {
@@ -320,6 +325,22 @@ class RedisTest {
 
     Thread.sleep(Duration.ofSeconds(5));
     assertFalse(productRepository.findById("1").isPresent());
+  }
+
+  @Test
+  void cache() {
+    Cache cache = cacheManager.getCache("scores");
+    cache.put("Eko", 100);
+    cache.put("Budi", 95);
+
+    assertEquals(100, cache.get("Eko", Integer.class));
+    assertEquals(95, cache.get("Budi", Integer.class));
+
+    cache.evict("Eko");
+    cache.evict("Budi");
+
+    assertNull(cache.get("Eko"));
+    assertNull(cache.get("Budi"));
   }
 }
 
