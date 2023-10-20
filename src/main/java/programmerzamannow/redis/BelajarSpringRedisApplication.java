@@ -13,6 +13,7 @@ import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
@@ -23,6 +24,7 @@ import java.time.Duration;
 @SpringBootApplication
 @Slf4j
 @EnableScheduling
+@EnableRedisRepositories
 public class BelajarSpringRedisApplication {
 
 	@Autowired
